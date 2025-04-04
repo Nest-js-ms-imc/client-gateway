@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { catchError } from 'rxjs';
-import { NATS_SERVICE } from 'src/config';
+import { catchError, throwError } from 'rxjs';
+import { NATS_SERVICE } from '../config';
 
 @Injectable()
 export class NatsClientProxy {
@@ -10,8 +10,7 @@ export class NatsClientProxy {
   send(pattern: string, data: any) {
     return this.client.send(pattern, data).pipe(
       catchError((error) => {
-        console.log(error);
-        throw new RpcException(error);
+        return throwError(() => new RpcException(error));
       }),
     );
   }

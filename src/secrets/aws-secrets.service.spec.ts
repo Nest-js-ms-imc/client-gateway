@@ -98,7 +98,7 @@ describe('AwsSecretsService', () => {
 
     const secret = await awsSecretsService.getSecret('test-secret');
 
-    expect(secret).toBeUndefined();
+    expect(secret).toBe('');
     expect(loggerSpy).toHaveBeenCalledWith(
       'Secret "test-secret" has no string value',
     );

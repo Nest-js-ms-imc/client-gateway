@@ -2,11 +2,11 @@ import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { catchError } from 'rxjs';
 
-import { NATS_SERVICE } from 'src/config';
+import { NATS_SERVICE } from '../config';
 
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RecordImcDto, RecordsImcDomainDto } from './dto';
-import { NatsClientProxy } from 'src/messaging/nats-client-proxy';
+import { NatsClientProxy } from '../messaging/nats-client-proxy';
 
 @Controller('imc')
 export class ImcController {

@@ -13,4 +13,4 @@ import { NatsClientProxy } from './messaging/nats-client-proxy';
   providers: [EnvsService, NatsClientProxy],
   exports: [NatsClientProxy],
 })
-export class InfrastructureModule {}
+export class InfraestructureModule {}
