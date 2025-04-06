@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { InfraestructureModule } from './infraestructure.module';
 import { EnvsService } from './secrets/envs.service';
-import { RpcCustomExceptionFilter } from './shared/exceptions/use-case.exception';
+import { RpcCustomExceptionFilter } from './exceptions/use-case.exception';
 
 jest.mock('@nestjs/core', () => {
   const useGlobalPipes = jest.fn();
@@ -11,7 +11,7 @@ jest.mock('@nestjs/core', () => {
   const listen = jest.fn();
   const get = jest.fn().mockImplementation((token) => {
     if (token === EnvsService) {
-      return { get: jest.fn().mockReturnValue('3000') };
+      return { get: jest.fn().mockReturnValue(3002) };
     }
   });
 
@@ -30,7 +30,7 @@ jest.mock('@nestjs/core', () => {
 
 describe('Main Bootstrap', () => {
   it('should bootstrap the application successfully', async () => {
-    await import('./main'); // Ejecuta la función bootstrap
+    await import('./main');
 
     const { NestFactory } = await import('@nestjs/core');
     const mockApp = await (NestFactory as any).create.mock.results[0].value;
@@ -46,6 +46,6 @@ describe('Main Bootstrap', () => {
     expect(mockApp.useGlobalFilters).toHaveBeenCalledWith(
       expect.any(RpcCustomExceptionFilter),
     );
-    expect(mockApp.listen).toHaveBeenCalledWith('3000');
+    expect(mockApp.listen).toHaveBeenCalledWith(3002);
   });
 });

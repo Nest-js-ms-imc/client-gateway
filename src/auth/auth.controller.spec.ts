@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { NatsClientProxy } from '../messaging/nats-client-proxy';
 import { RegisterUserDto, LoginUserDto, LogoutUserDto } from './dto';
+import { NatsClientProxy } from '../services';
 
 describe('AuthController', () => {
   let controller: AuthController;

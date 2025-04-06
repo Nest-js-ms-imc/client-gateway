@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 
 import { LoginUserDto, LogoutUserDto, RegisterUserDto } from './dto';
-import { NatsClientProxy } from '../messaging/nats-client-proxy';
+import { NatsClientProxy } from '../services';
 
 @Controller('auth')
 export class AuthController {

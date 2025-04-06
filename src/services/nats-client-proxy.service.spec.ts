@@ -1,6 +1,6 @@
 import { RpcException } from '@nestjs/microservices';
 import { of, throwError } from 'rxjs';
-import { NatsClientProxy } from './nats-client-proxy';
+import { NatsClientProxy } from './nats-client-proxy.service';
 
 describe('NatsClientProxy', () => {
   let service: NatsClientProxy;

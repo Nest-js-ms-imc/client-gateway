@@ -4,7 +4,7 @@ import {
   GetSecretValueCommand,
   SecretsManagerClient,
 } from '@aws-sdk/client-secrets-manager';
-import { SecretsService } from 'src/shared/services/secrets.service';
+import { SecretsService } from '../interface/secrets.interface';
 
 @Injectable()
 export class AwsSecretsService implements SecretsService, OnModuleInit {
