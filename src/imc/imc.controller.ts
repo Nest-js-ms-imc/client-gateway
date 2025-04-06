@@ -6,7 +6,7 @@ import { NATS_SERVICE } from '../config';
 
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RecordImcDto, RecordsImcDomainDto } from './dto';
-import { User, Token } from '../auth/decorators';
+import { User } from '../auth/decorators';
 import { CurrentUser } from '../auth/interfaces/current-user.interface';
 import { NatsClientProxy } from '../services';
 
@@ -18,14 +18,20 @@ export class ImcController {
     private readonly natsClientProxy: NatsClientProxy,
   ) {}
 
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Post('new-record')
-  newRecordImc(
-    @Body() registerUserDto: RecordImcDto,
-    // @User() user: CurrentUser,
-    // @Token() token: string,
-  ) {
-    return this.natsClientProxy.send('imc.new.record', registerUserDto);
+  newRecordImc(@Body() recordImcDto: RecordImcDto, @User() user: CurrentUser) {
+    // this.natsClientProxy.send('auth.verify.user', { token }).subscribe({
+    //   next: (response) => console.log(response),
+    //   error: (err) => console.error('Error:', err),
+    // });
+
+    // console.log({ user });
+
+    return this.natsClientProxy.send('imc.new.record', {
+      ...recordImcDto,
+      userId: user.id,
+    });
     // return this.client.send('imc.new.record', registerUserDto).pipe(
     //   catchError((error) => {
     //     throw new RpcException(error);
@@ -33,14 +39,10 @@ export class ImcController {
     // );
   }
 
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Get('list-records')
-  listImcRecords(
-    @Body() loginUserDto: RecordsImcDomainDto,
-    // @User() user: CurrentUser,
-    // @Token() token: string,
-  ) {
-    return this.natsClientProxy.send('imc.list.records', loginUserDto);
+  listImcRecords(@User() user: CurrentUser) {
+    return this.natsClientProxy.send('imc.list.records', user.id);
     // return this.client.send('imc.list.records', loginUserDto).pipe(
     //   catchError((error) => {
     //     throw new RpcException(error);

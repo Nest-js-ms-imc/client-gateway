@@ -40,6 +40,6 @@ export class RecordImcDto {
   @IsNumber()
   weight: number;
 
-  @IsUUID()
-  userId: string;
+  // @IsUUID()
+  // userId: string;
 }

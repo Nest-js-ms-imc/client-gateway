@@ -1,7 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 
 import { LoginUserDto, LogoutUserDto, RegisterUserDto } from './dto';
 import { NatsClientProxy } from '../services';
+import { AuthGuard } from './guards/auth.guard';
+import { User, Token } from './decorators';
+import { CurrentUser } from './interfaces/current-user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -42,6 +45,8 @@ export class AuthController {
 
   @Get('verifyToken')
   verifyToken(@Body() logoutUserDto: LogoutUserDto) {
+    // verifyToken(@User() user: CurrentUser, @Token() token: string) {
+    // return { user, token };
     return this.natsClientProxy.send('auth.verify.user', logoutUserDto);
     // return this.client.send('auth.logout.user', logoutUserDto).pipe(
     //   catchError((error) => {

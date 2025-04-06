@@ -8,6 +8,8 @@ export const Token = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
 
+    // console.log({ request });
+
     if (!request.token) {
       throw new InternalServerErrorException(
         'Token not found in request (AuthGuard called?)',
