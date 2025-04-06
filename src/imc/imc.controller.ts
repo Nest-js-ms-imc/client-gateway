@@ -42,7 +42,7 @@ export class ImcController {
   @UseGuards(AuthGuard)
   @Get('list-records')
   listImcRecords(@User() user: CurrentUser) {
-    return this.natsClientProxy.send('imc.list.records', user.id);
+    return this.natsClientProxy.send('imc.list.records', { id: user.id });
     // return this.client.send('imc.list.records', loginUserDto).pipe(
     //   catchError((error) => {
     //     throw new RpcException(error);
