@@ -1,9 +1,11 @@
 import { UnauthorizedException, ExecutionContext } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { Test } from '@nestjs/testing';
 import { of, throwError } from 'rxjs';
+
 import { AuthGuard } from './auth.guard';
 import { NATS_SERVICE } from '../../config';
-import { ClientProxy } from '@nestjs/microservices';
+import { NatsClientProxy } from '../../services';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
@@ -19,6 +21,10 @@ describe('AuthGuard', () => {
         AuthGuard,
         {
           provide: NATS_SERVICE,
+          useValue: clientProxyMock,
+        },
+        {
+          provide: NatsClientProxy,
           useValue: clientProxyMock,
         },
       ],
@@ -52,10 +58,27 @@ describe('AuthGuard', () => {
     const result = await guard.canActivate(context);
 
     expect(result).toBe(true);
-    expect(clientProxyMock.send).toHaveBeenCalledWith(
-      'auth.verify.user',
-      'valid-token',
+    expect(clientProxyMock.send).toHaveBeenCalledWith('auth.verify.user', {
+      token: 'valid-token',
+    });
+  });
+
+  it('should allow request if user not found', async () => {
+    const mockUser = undefined;
+    const mockToken = 'new-token';
+
+    (clientProxyMock.send as jest.Mock).mockReturnValue(
+      of({ token: mockToken }),
     );
+
+    const context = createMockContext('Bearer valid-token');
+
+    const result = await guard.canActivate(context);
+
+    expect(result).toBe(true);
+    expect(clientProxyMock.send).toHaveBeenCalledWith('auth.verify.user', {
+      token: 'valid-token',
+    });
   });
 
   it('should throw UnauthorizedException if token is missing', async () => {

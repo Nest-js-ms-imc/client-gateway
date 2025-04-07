@@ -6,7 +6,6 @@ describe('RecordImcDto', () => {
     const dto = new RecordImcDto();
     dto.height = 1.7;
     dto.weight = 70;
-    dto.userId = '550e8400-e29b-41d4-a716-446655440000';
 
     const errors = await validate(dto);
     expect(errors.length).toBe(0);
@@ -16,7 +15,6 @@ describe('RecordImcDto', () => {
     const dto = new RecordImcDto();
     dto.height = 'abc' as unknown as number;
     dto.weight = 70;
-    dto.userId = '550e8400-e29b-41d4-a716-446655440000';
 
     const errors = await validate(dto);
     expect(errors.length).toBeGreaterThan(0);
@@ -27,7 +25,6 @@ describe('RecordImcDto', () => {
     const dto = new RecordImcDto();
     dto.height = 1.234;
     dto.weight = 70;
-    dto.userId = '550e8400-e29b-41d4-a716-446655440000';
 
     const errors = await validate(dto);
 
@@ -45,7 +42,6 @@ describe('RecordImcDto', () => {
     const dto = new RecordImcDto();
     dto.height = 1.7;
     dto.weight = 'abc' as unknown as number;
-    dto.userId = '550e8400-e29b-41d4-a716-446655440000';
 
     const errors = await validate(dto);
     expect(errors.length).toBeGreaterThan(0);
@@ -56,10 +52,8 @@ describe('RecordImcDto', () => {
     const dto = new RecordImcDto();
     dto.height = 1.7;
     dto.weight = 70;
-    dto.userId = 'invalid-uuid';
 
     const errors = await validate(dto);
-    expect(errors.length).toBeGreaterThan(0);
-    expect(errors[0].constraints).toHaveProperty('isUuid');
+    expect(errors.length).toBe(0);
   });
 });

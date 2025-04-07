@@ -5,6 +5,7 @@ import { NATS_SERVICE } from '../config';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RecordImcDto, RecordsImcDomainDto } from './dto';
 import { NatsClientProxy } from '../services';
+import { CurrentUser } from 'src/auth/interfaces/current-user.interface';
 
 describe('ImcController', () => {
   let controller: ImcController;
@@ -39,22 +40,32 @@ describe('ImcController', () => {
   });
 
   it('should call natsClientProxy.send on newRecordImc', () => {
-    const dto: RecordImcDto = { userId: '123', weight: 70, height: 1.75 };
-    controller.newRecordImc(dto);
+    const dto: RecordImcDto = { weight: 70, height: 1.75 };
+    const currentUser: CurrentUser = {
+      id: '123',
+      name: 'Test User',
+      email: 'test@example.com',
+    };
 
-    expect(mockNatsClientProxy.send).toHaveBeenCalledWith(
-      'imc.new.record',
-      dto,
-    );
+    controller.newRecordImc(dto, currentUser);
+
+    expect(mockNatsClientProxy.send).toHaveBeenCalledWith('imc.new.record', {
+      weight: 70,
+      height: 1.75,
+      userId: currentUser.id,
+    });
   });
 
   it('should call natsClientProxy.send on listImcRecords', () => {
-    const dto: RecordsImcDomainDto = { id: '123' };
-    controller.listImcRecords(dto);
+    const currentUser: CurrentUser = {
+      id: '123',
+      name: 'Test User',
+      email: 'test@example.com',
+    };
+    controller.listImcRecords(currentUser);
 
-    expect(mockNatsClientProxy.send).toHaveBeenCalledWith(
-      'imc.list.records',
-      dto,
-    );
+    expect(mockNatsClientProxy.send).toHaveBeenCalledWith('imc.list.records', {
+      id: currentUser.id,
+    });
   });
 });
