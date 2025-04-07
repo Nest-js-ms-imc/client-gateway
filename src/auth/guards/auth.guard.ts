@@ -35,50 +35,40 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Token not found');
     }
 
-    try {
-      // const user = await firstValueFrom(
-      //   this.natsClientProxy.send('auth.verify.user', token),
-      // );
+    // const user = await firstValueFrom(
+    //   this.natsClientProxy.send('auth.verify.user', token),
+    // );
 
-      const user = await firstValueFrom(
-        this.client.send('auth.verify.user', { token }).pipe(
-          timeout(3000),
-          catchError((err) => {
-            if (err instanceof TimeoutError) {
-              return throwError(
-                () => new UnauthorizedException('Token validation timeout'),
-              );
-            }
-            return throwError(
-              () => new UnauthorizedException('Token validation failed'),
-            );
-          }),
-        ),
-      );
+    const user = await firstValueFrom(
+      this.client.send('auth.verify.user', { token }).pipe(
+        timeout(3000),
+        catchError(() => {
+          return throwError(
+            () => new UnauthorizedException('Token validation failed'),
+          );
+        }),
+      ),
+    );
 
-      // this.natsClientProxy.send('auth.verify.user', { token }).subscribe({
-      //   next: (user) => {
-      //     console.log('AuthGuard', { user, token });
+    // this.natsClientProxy.send('auth.verify.user', { token }).subscribe({
+    //   next: (user) => {
+    //     console.log('AuthGuard', { user, token });
 
-      //     request['user'] = user;
-      //   },
-      //   error: (err) => console.error('Error:', err),
-      // });
+    //     request['user'] = user;
+    //   },
+    //   error: (err) => console.error('Error:', err),
+    // });
 
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-
-      // console.log('AuthGuard', { user, token });
-
-      request['user'] = user;
-      request['token'] = token;
-
-      return true;
-    } catch (error) {
-      console.error('AuthGuard error:', error.message);
-      throw new UnauthorizedException('Invalid token');
+    if (!user) {
+      throw new UnauthorizedException('User not found');
     }
+
+    // console.log('AuthGuard', { user, token });
+
+    request['user'] = user;
+    request['token'] = token;
+
+    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

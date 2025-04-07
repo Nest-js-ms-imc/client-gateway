@@ -3,7 +3,7 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { LoginUserDto, LogoutUserDto, RegisterUserDto } from './dto';
 import { NatsClientProxy } from '../services';
 import { AuthGuard } from './guards/auth.guard';
-import { User, Token } from './decorators';
+import { User } from './decorators';
 import { CurrentUser } from './interfaces/current-user.interface';
 
 @Controller('auth')

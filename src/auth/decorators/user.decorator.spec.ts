@@ -1,38 +1,62 @@
 import { ExecutionContext, InternalServerErrorException } from '@nestjs/common';
+
 import { User } from './user.decorator';
-import { CurrentUser } from '../interfaces/current-user.interface';
+
+jest.mock('@nestjs/common', () => {
+  const originalModule = jest.requireActual('@nestjs/common');
+  return {
+    ...originalModule,
+    createParamDecorator: (
+      factory: (data: unknown, ctx: ExecutionContext) => unknown,
+    ) => {
+      const decorator = (data: unknown, ctx: ExecutionContext) => {
+        return factory(data, ctx);
+      };
+      return decorator;
+    },
+  };
+});
 
 describe('User Decorator', () => {
-  const mockExecutionContext = (user?: CurrentUser): ExecutionContext =>
-    ({
-      switchToHttp: () => ({
-        getRequest: () => ({
-          user,
-        }),
-      }),
-    }) as unknown as ExecutionContext;
+  it('should extract user from request', () => {
+    const mockUser = {
+      id: '123',
+      name: 'Test User',
+      email: 'test@example.com',
+    };
 
-  it('should return the user from the request', () => {
-    const ctx = mockExecutionContext({
-      id: '1',
-      name: 'mocked-user',
-      email: 'mocked-user@example.com',
+    const mockRequest = { user: mockUser };
+    const mockGetRequest = jest.fn().mockReturnValue(mockRequest);
+    const mockSwitchToHttp = jest.fn().mockReturnValue({
+      getRequest: mockGetRequest,
     });
+    const mockExecutionContext = {
+      switchToHttp: mockSwitchToHttp,
+    } as unknown as ExecutionContext;
 
-    const result = User(null, ctx);
-    expect(result).toBe({
-      id: '1',
-      name: 'mocked-user',
-      email: 'mocked-user@example.com',
-    });
+    // Llamamos al decorador real
+    const result = User(undefined, mockExecutionContext);
+
+    expect(result).toEqual(mockUser);
+    expect(mockSwitchToHttp).toHaveBeenCalled();
+    expect(mockGetRequest).toHaveBeenCalled();
   });
 
-  it('should throw InternalServerErrorException if user is missing', () => {
-    const ctx = mockExecutionContext(undefined);
+  it('should throw exception when user is not in request', () => {
+    const mockRequest = { user: undefined };
+    const mockGetRequest = jest.fn().mockReturnValue(mockRequest);
+    const mockSwitchToHttp = jest.fn().mockReturnValue({
+      getRequest: mockGetRequest,
+    });
+    const mockExecutionContext = {
+      switchToHttp: mockSwitchToHttp,
+    } as unknown as ExecutionContext;
 
-    expect(() => User(null, ctx)).toThrow(InternalServerErrorException);
-    expect(() => User(null, ctx)).toThrow(
-      'User not found in request (AuthGuard called?)',
-    );
+    expect(() => {
+      User(undefined, mockExecutionContext);
+    }).toThrow(InternalServerErrorException);
+    expect(() => {
+      User(undefined, mockExecutionContext);
+    }).toThrow('User not found in request (AuthGuard called?)');
   });
 });

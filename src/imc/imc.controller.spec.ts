@@ -5,7 +5,9 @@ import { NATS_SERVICE } from '../config';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { RecordImcDto, RecordsImcDomainDto } from './dto';
 import { NatsClientProxy } from '../services';
-import { CurrentUser } from 'src/auth/interfaces/current-user.interface';
+import { CurrentUser } from '../auth/interfaces/current-user.interface';
+import { User } from '../auth/decorators';
+import { ExecutionContext } from '@nestjs/common';
 
 describe('ImcController', () => {
   let controller: ImcController;

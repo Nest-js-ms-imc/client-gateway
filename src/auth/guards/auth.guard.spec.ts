@@ -10,6 +10,7 @@ import { NatsClientProxy } from '../../services';
 describe('AuthGuard', () => {
   let guard: AuthGuard;
   let clientProxyMock: Partial<ClientProxy>;
+  let natsClientProxy: NatsClientProxy;
 
   beforeEach(async () => {
     clientProxyMock = {
@@ -31,6 +32,8 @@ describe('AuthGuard', () => {
     }).compile();
 
     guard = moduleRef.get<AuthGuard>(AuthGuard);
+    clientProxyMock = moduleRef.get<ClientProxy>(NATS_SERVICE);
+    natsClientProxy = moduleRef.get<NatsClientProxy>(NatsClientProxy);
   });
 
   const createMockContext = (authHeader?: string): ExecutionContext => {
@@ -98,6 +101,26 @@ describe('AuthGuard', () => {
 
     await expect(guard.canActivate(context)).rejects.toThrow(
       UnauthorizedException,
+    );
+  });
+
+  it('should throw UnauthorizedException when user is null', async () => {
+    const mockRequest = {
+      headers: {
+        authorization: 'Bearer valid-token',
+      },
+    };
+
+    const mockContext = {
+      switchToHttp: jest.fn().mockReturnValue({
+        getRequest: jest.fn().mockReturnValue(mockRequest),
+      }),
+    } as unknown as ExecutionContext;
+
+    jest.spyOn(clientProxyMock, 'send').mockReturnValueOnce(of(null));
+
+    await expect(guard.canActivate(mockContext)).rejects.toThrow(
+      new UnauthorizedException('User not found'),
     );
   });
 });
