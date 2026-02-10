@@ -5,6 +5,7 @@ import { InfraestructureModule } from './infraestructure.module';
 import { EnvsService } from './secrets/envs.service';
 import { RpcCustomExceptionFilter } from './exceptions/use-case.exception';
 import { envs } from './config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const logger = new Logger('Main-Gateway');
@@ -28,6 +29,19 @@ async function bootstrap() {
   );
 
   const envsService = app.get(EnvsService);
+
+  if (envsService.get('NODE_ENV') === 'dev') {
+    const config = new DocumentBuilder()
+      .setTitle('API IMC')
+      .setDescription('API for body mass index calculation')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   app.useGlobalFilters(new RpcCustomExceptionFilter());
 

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsUUID, Matches } from 'class-validator';
 
 import {
@@ -28,6 +29,7 @@ export function IsFloatWithOneOrTwoDecimals(
 }
 
 export class RecordImcDto {
+  @ApiProperty({ example: 1.75 })
   @IsNumber(
     {},
     { message: 'Must be a valid, positive number greater than zero' },
@@ -37,6 +39,7 @@ export class RecordImcDto {
   })
   height: number;
 
+  @ApiProperty({ example: 80 })
   @IsNumber()
   weight: number;
 
