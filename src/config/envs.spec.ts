@@ -21,6 +21,7 @@ describe('Environment Variables Validation', () => {
     process.env.IMC_MICROSERVICE_HOST = 'localhost';
     process.env.IMC_MICROSERVICE_PORT = '5000';
     process.env.NATS_SERVERS = 'nats://localhost:4222,nats://localhost:4223';
+    process.env.NODE_ENV = 'dev';
 
     const { envs } = await import('./envs');
     expect(envs).toEqual({
@@ -30,6 +31,7 @@ describe('Environment Variables Validation', () => {
       imcMicroserviceHost: 'localhost',
       imcMicroservicePort: 5000,
       natsServers: ['nats://localhost:4222', 'nats://localhost:4223'],
+      nodeEnv: 'dev',
     });
   });
 

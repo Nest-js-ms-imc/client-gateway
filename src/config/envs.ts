@@ -8,6 +8,7 @@ interface EnvVars {
   IMC_MICROSERVICE_HOST: string;
   IMC_MICROSERVICE_PORT: number;
   NATS_SERVERS: string[];
+  NODE_ENV: 'dev' | 'prod';
 }
 
 const envsSchema = joi
@@ -18,6 +19,7 @@ const envsSchema = joi
     IMC_MICROSERVICE_HOST: joi.string().required(),
     IMC_MICROSERVICE_PORT: joi.number().required(),
     NATS_SERVERS: joi.array().items(joi.string()).required(),
+    NODE_ENV: joi.string().valid('dev', 'prod', 'test').required(),
   })
   .unknown(true);
 
@@ -37,4 +39,5 @@ export const envs = {
   imcMicroserviceHost: envVars.IMC_MICROSERVICE_HOST,
   imcMicroservicePort: envVars.IMC_MICROSERVICE_PORT,
   natsServers: envVars.NATS_SERVERS,
+  nodeEnv: envVars.NODE_ENV,
 };

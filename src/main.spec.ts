@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { InfraestructureModule } from './infraestructure.module';
 import { EnvsService } from './secrets/envs.service';
 import { RpcCustomExceptionFilter } from './exceptions/use-case.exception';
+import { envs } from './config/envs';
 
 jest.mock('@nestjs/core', () => {
   const useGlobalPipes = jest.fn();
@@ -30,6 +31,8 @@ jest.mock('@nestjs/core', () => {
 
 describe('Main Bootstrap', () => {
   it('should bootstrap the application successfully', async () => {
+    process.env.NODE_ENV = 'dev';
+
     await import('./main');
 
     const { NestFactory } = await import('@nestjs/core');
